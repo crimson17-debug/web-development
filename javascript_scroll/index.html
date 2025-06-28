@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Casino Slot Machine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .casino-container {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 3px solid #ffd700;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .title {
+            text-align: center;
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px #ffd700;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 30px #ffd700, 0 0 40px #ffd700; }
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .info-label {
+            font-size: 0.9em;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .slot-machine {
+            background: #333;
+            border: 4px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .reels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .reel {
+            background: #fff;
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .symbol {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+            background: linear-gradient(45deg, #f0f0f0, #fff);
+            transition: all 0.3s ease;
+        }
+
+        .symbol:last-child {
+            border-bottom: none;
+        }
+
+        .symbol.winning {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            animation: pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .spinning {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100%); }
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group label {
+            color: #ffd700;
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            font-size: 1em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            box-shadow: 0 4px 15px rgba(238, 90, 82, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            box-shadow: 0 4px 15px rgba(68, 160, 141, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .message.win {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            animation: celebrate 0.5s ease-in-out;
+        }
+
+        .message.lose {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .message.info {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .game-over {
+            background: linear-gradient(45deg, #333, #555);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+        }
+
+        @media (max-width: 600px) {
+            .casino-container {
+                padding: 20px;
+            }
+            
+            .title {
+                font-size: 2em;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .input-group label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="casino-container">
+        <h1 class="title">🎰 CASINO ROYALE 🎰</h1>
+        
+        <div class="game-info">
+            <div class="info-card">
+                <div class="info-label">Balance</div>
+                <div class="info-value" id="balance">$0</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Last Win</div>
+                <div class="info-value" id="lastWin">$0</div>
+            </div>
+        </div>
+
+        <div class="slot-machine">
+            <div class="reels" id="reels">
+                <div class="reel">
+                    <div class="symbol">🍒</div>
+                    <div class="symbol">🍋</div>
+                    <div class="symbol">🍊</div>
+                </div>
+                <div class="reel">
+                    <div class="symbol">🍒</div>
+                    <div class="symbol">🍋</div>
+                    <div class="symbol">🍊</div>
+                </div>
+                <div class="reel">
+                    <div class="symbol">🍒</div>
+                    <div class="symbol">🍋</div>
+                    <div class="symbol">🍊</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="input-group">
+                <label for="depositAmount">Deposit Amount:</label>
+                <input type="number" id="depositAmount" min="1" placeholder="Enter amount to deposit">
+            </div>
+            
+            <div class="input-group">
+                <label for="numberOfLines">Lines to Bet:</label>
+                <input type="number" id="numberOfLines" min="1" max="3" value="1" placeholder="1-3 lines">
+            </div>
+            
+            <div class="input-group">
+                <label for="betAmount">Bet per Line:</label>
+                <input type="number" id="betAmount" min="1" placeholder="Enter bet amount">
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="deposit()" id="depositBtn">💰 Deposit</button>
+                <button class="btn btn-primary" onclick="spin()" id="spinBtn" disabled>🎰 SPIN</button>
+            </div>
+        </div>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // Game constants
+        const ROWS = 3;
+        const COLS = 3;
+
+        const SYMBOLS_COUNT = {
+            "🍒": 2,  // Cherry (A)
+            "🍋": 4,  // Lemon (B)  
+            "🍊": 6,  // Orange (C)
+            "🔔": 8   // Bell (D)
+        };
+
+        const SYMBOL_VALUES = {
+            "🍒": 5,
+            "🍋": 4,
+            "🍊": 3,
+            "🔔": 2
+        };
+
+        // Game state
+        let balance = 0;
+        let isSpinning = false;
+
+        // DOM elements
+        const balanceEl = document.getElementById('balance');
+        const lastWinEl = document.getElementById('lastWin');
+        const messageEl = document.getElementById('message');
+        const reelsEl = document.getElementById('reels');
+        const depositBtn = document.getElementById('depositBtn');
+        const spinBtn = document.getElementById('spinBtn');
+
+        function updateBalance() {
+            balanceEl.textContent = `$${balance}`;
+        }
+
+        function showMessage(text, type = 'info') {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            setTimeout(() => {
+                messageEl.textContent = '';
+                messageEl.className = '';
+            }, 3000);
+        }
+
+        function deposit() {
+            const depositAmount = parseFloat(document.getElementById('depositAmount').value);
+            
+            if (isNaN(depositAmount) || depositAmount <= 0) {
+                showMessage('Please enter a valid deposit amount!', 'lose');
+                return;
+            }
+
+            balance += depositAmount;
+            updateBalance();
+            document.getElementById('depositAmount').value = '';
+            spinBtn.disabled = false;
+            showMessage(`Successfully deposited $${depositAmount}!`, 'win');
+        }
+
+        function generateReels() {
+            const symbols = [];
+            for (const [symbol, count] of Object.entries(SYMBOLS_COUNT)) {
+                for (let i = 0; i < count; i++) {
+                    symbols.push(symbol);
+                }
+            }
+
+            const reels = [];
+            for (let i = 0; i < COLS; i++) {
+                reels.push([]);
+                const reelSymbols = [...symbols];
+                for (let j = 0; j < ROWS; j++) {
+                    const randomIndex = Math.floor(Math.random() * reelSymbols.length);
+                    const selectedSymbol = reelSymbols[randomIndex];
+                    reels[i].push(selectedSymbol);
+                    reelSymbols.splice(randomIndex, 1);
+                }
+            }
+
+            return reels;
+        }
+
+        function transpose(reels) {
+            const rows = [];
+            for (let i = 0; i < ROWS; i++) {
+                rows.push([]);
+                for (let j = 0; j < COLS; j++) {
+                    rows[i].push(reels[j][i]);
+                }
+            }
+            return rows;
+        }
+
+        function displayReels(rows) {
+            const reelElements = reelsEl.querySelectorAll('.reel');
+            
+            for (let col = 0; col < COLS; col++) {
+                const symbolElements = reelElements[col].querySelectorAll('.symbol');
+                for (let row = 0; row < ROWS; row++) {
+                    symbolElements[row].textContent = rows[row][col];
+                    symbolElements[row].classList.remove('winning');
+                }
+            }
+        }
+
+        function highlightWinningLines(rows, lines) {
+            const reelElements = reelsEl.querySelectorAll('.reel');
+            
+            for (let row = 0; row < lines; row++) {
+                const symbols = rows[row];
+                let allSame = true;
+
+                for (const symbol of symbols) {
+                    if (symbol !== symbols[0]) {
+                        allSame = false;
+                        break;
+                    }
+                }
+
+                if (allSame) {
+                    for (let col = 0; col < COLS; col++) {
+                        const symbolEl = reelElements[col].querySelectorAll('.symbol')[row];
+                        symbolEl.classList.add('winning');
+                    }
+                }
+            }
+        }
+
+        function calculateWinnings(rows, bet, lines) {
+            let winnings = 0;
+
+            for (let row = 0; row < lines; row++) {
+                const symbols = rows[row];
+                let allSame = true;
+
+                for (const symbol of symbols) {
+                    if (symbol !== symbols[0]) {
+                        allSame = false;
+                        break;
+                    }
+                }
+
+                if (allSame) {
+                    winnings += bet * SYMBOL_VALUES[symbols[0]];
+                }
+            }
+
+            return winnings;
+        }
+
+        function animateSpinning() {
+            const reelElements = reelsEl.querySelectorAll('.reel');
+            reelElements.forEach(reel => {
+                reel.classList.add('spinning');
+            });
+
+            setTimeout(() => {
+                reelElements.forEach(reel => {
+                    reel.classList.remove('spinning');
+                });
+            }, 1000);
+        }
+
+        async function spin() {
+            if (isSpinning) return;
+
+            const numberOfLines = parseInt(document.getElementById('numberOfLines').value);
+            const betAmount = parseFloat(document.getElementById('betAmount').value);
+
+            if (isNaN(numberOfLines) || numberOfLines <= 0 || numberOfLines > 3) {
+                showMessage('Please enter a valid number of lines (1-3)!', 'lose');
+                return;
+            }
+
+            if (isNaN(betAmount) || betAmount <= 0) {
+                showMessage('Please enter a valid bet amount!', 'lose');
+                return;
+            }
+
+            const totalBet = betAmount * numberOfLines;
+            if (totalBet > balance) {
+                showMessage('Insufficient balance for this bet!', 'lose');
+                return;
+            }
+
+            isSpinning = true;
+            spinBtn.disabled = true;
+            balance -= totalBet;
+            updateBalance();
+
+            animateSpinning();
+
+            setTimeout(() => {
+                const reels = generateReels();
+                const rows = transpose(reels);
+                displayReels(rows);
+
+                const winnings = calculateWinnings(rows, betAmount, numberOfLines);
+                balance += winnings;
+                updateBalance();
+
+                if (winnings > 0) {
+                    highlightWinningLines(rows, numberOfLines);
+                    lastWinEl.textContent = `$${winnings}`;
+                    showMessage(`🎉 Congratulations! You won $${winnings}!`, 'win');
+                } else {
+                    showMessage('😔 Better luck next time!', 'lose');
+                }
+
+                if (balance <= 0) {
+                    showMessage('💸 Game Over! You ran out of money!', 'lose');
+                    spinBtn.disabled = true;
+                    setTimeout(() => {
+                        if (confirm('Game Over! Would you like to make another deposit to continue playing?')) {
+                            document.getElementById('depositAmount').focus();
+                        }
+                    }, 2000);
+                } else {
+                    spinBtn.disabled = false;
+                }
+
+                isSpinning = false;
+            }, 1000);
+        }
+
+        // Initialize the game
+        updateBalance();
+        document.getElementById('depositAmount').focus();
+
+        // Enter key listeners
+        document.getElementById('depositAmount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') deposit();
+        });
+
+        document.getElementById('betAmount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !spinBtn.disabled) spin();
+        });
+
+        document.getElementById('numberOfLines').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !spinBtn.disabled) spin();
+        });
+    </script>
+</body>
+</html>
